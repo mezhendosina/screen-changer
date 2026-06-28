@@ -125,7 +125,7 @@ public static class DisplayConfigService
         var (paths, _) = QueryAllPaths();
 
         var seen = new HashSet<(uint, int, uint)>();
-        var monitors = new List<MonitorInfo>();
+        var raw = new List<(uint SourceId, string Name, uint AdapterLow, int AdapterHigh, uint TargetId)>();
 
         foreach (var path in paths)
         {
@@ -134,11 +134,17 @@ public static class DisplayConfigService
             if (!seen.Add(key)) continue;
 
             string name = GetFriendlyName(path.TargetInfo.AdapterId, path.TargetInfo.Id)
-                       ?? $"Монитор {monitors.Count + 1}";
-            monitors.Add(new MonitorInfo(monitors.Count, name,
+                       ?? $"Монитор {raw.Count + 1}";
+            raw.Add((path.SourceInfo.Id, name,
                 path.TargetInfo.AdapterId.LowPart, path.TargetInfo.AdapterId.HighPart,
                 path.TargetInfo.Id));
         }
+
+        // Sort by GDI source ID — matches the "Display 1 / Display 2" order in Windows Settings
+        raw.Sort((a, b) => a.SourceId.CompareTo(b.SourceId));
+
+        var monitors = raw.Select((r, i) =>
+            new MonitorInfo(i, r.Name, r.AdapterLow, r.AdapterHigh, r.TargetId)).ToList();
 
         var activeTargets = paths
             .Where(p => (p.Flags & DISPLAYCONFIG_PATH_ACTIVE) != 0 && p.TargetInfo.TargetAvailable)
