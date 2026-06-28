@@ -1,5 +1,7 @@
 # ScreenChanger
 
+<img src="Assets/icon.png" width="64" alt="ScreenChanger icon"/>
+
 A Windows system tray app for switching between monitors with global hotkeys.
 
 ## Features
