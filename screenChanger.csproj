@@ -9,9 +9,14 @@
     <RootNamespace>ScreenChanger</RootNamespace>
     <AssemblyName>ScreenChanger</AssemblyName>
     <ImplicitUsings>enable</ImplicitUsings>
+    <ApplicationIcon>Assets\icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="System.Management" Version="10.0.9" />
     <PackageReference Include="WPF-UI" Version="3.0.5" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\icon.ico" />
+    <Resource Include="Assets\icon.png" />
   </ItemGroup>
 </Project>

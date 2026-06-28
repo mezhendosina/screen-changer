@@ -172,13 +172,20 @@ public partial class MainWindow : FluentWindow
         }
     }
 
+    private static System.Drawing.Icon LoadTrayIcon()
+    {
+        var uri = new Uri("pack://application:,,,/Assets/icon.ico");
+        using var stream = WpfApplication.GetResourceStream(uri)!.Stream;
+        return new System.Drawing.Icon(stream, new System.Drawing.Size(16, 16));
+    }
+
     private void SetupTray()
     {
         _tray = new System.Windows.Forms.NotifyIcon
         {
             Text = "Screen Changer",
             Visible = true,
-            Icon = System.Drawing.SystemIcons.Application
+            Icon = LoadTrayIcon()
         };
 
         var menu = new System.Windows.Forms.ContextMenuStrip();
@@ -192,6 +199,20 @@ public partial class MainWindow : FluentWindow
             menu.Items.Add(_monitors[i].Name + hotkey, null,
                 (_, _) => DoSwitch(_monitors[idx]));
         }
+
+        menu.Items.Add("-");
+
+        var startupItem = new System.Windows.Forms.ToolStripMenuItem("Автозапуск")
+        {
+            CheckOnClick = true,
+            Checked = StartupService.IsEnabled()
+        };
+        startupItem.CheckedChanged += (_, _) =>
+        {
+            if (startupItem.Checked) StartupService.Enable();
+            else StartupService.Disable();
+        };
+        menu.Items.Add(startupItem);
 
         menu.Items.Add("-");
         menu.Items.Add("Выход", null, (_, _) => Dispatcher.Invoke(() => WpfApplication.Current.Shutdown()));
